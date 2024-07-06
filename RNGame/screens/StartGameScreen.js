@@ -1,19 +1,27 @@
 import React, { useState } from "react";
-import { TextInput, View, StyleSheet } from "react-native";
-import PrimaryButton from "../components/PrimaryButton";
+import { TextInput, View, StyleSheet, Alert } from "react-native";
+import PrimaryButton from "../components/ui/PrimaryButton";
+import Colors from "../constants/colors";
 
-const StartGameScreen = () => {
+const StartGameScreen = ({ onPickNumber }) => {
 const [enteredNumber, setEnteredNumber] = useState("");
 
 function numberInputHandler(enteredText) {
  setEnteredNumber(enteredText);
 }
 
+function resetInputHandler() {
+  setEnteredNumber("");
+}
+
 function confirmInputHandler() {
   const choosenNumber = parseInt(enteredNumber);
   if(isNaN(choosenNumber) || choosenNumber <= 0 || choosenNumber > 99) {
+    Alert.alert("Invalid Number!", "Number has to be a number between 1 and 99.", [{text: "Okay", style: "destructive", onPress: resetInputHandler}]);
     return;
   }
+
+  onPickNumber(choosenNumber);
 }
 
   return (
@@ -29,7 +37,7 @@ function confirmInputHandler() {
       />
       <View style={styles.buttonsContainer}>
         <View style={styles.btnContainer}>
-          <PrimaryButton>Reset</PrimaryButton>
+          <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
         </View>
         <View style={styles.btnContainer}>
           <PrimaryButton onPress={confirmInputHandler}>Confirm</PrimaryButton>
@@ -48,7 +56,7 @@ const styles = StyleSheet.create({
     marginTop: 100,
     marginHorizontal: 24,
     padding: 16,
-    backgroundColor: "#300319",
+    backgroundColor: Colors.primary800,
     borderRadius: 8,
     elevation: 4, // Android only shadow
     shadowColor: "black", // iOS only shadow
@@ -60,9 +68,9 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     fontSize: 32,
-    borderBottomColor: "#ddb52f",
+    borderBottomColor: Colors.accent500,
     borderBottomWidth: 2,
-    color: "#ddb52f",
+    color: Colors.accent500,
     marginVertical: 8,
     fontWeight: "bold",
     textAlign: "center",
