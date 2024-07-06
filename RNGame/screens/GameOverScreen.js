@@ -2,16 +2,24 @@
 import React from "react";
 import { View, Image, StyleSheet, Text } from "react-native";
 import Title from "../components/ui/Title";
+import PrimaryButton from "../components/ui/PrimaryButton";
 import Colors from "../constants/colors";
 
-const GameOverScreen = () => {
+const GameOverScreen = ({roundsNumber, userNumber, onStartNewGame}) => {
   return (
     <View style={styles.rootContainer}>
       <Title>GAME OVER!</Title>
       <View style={styles.imageContainer}>
-        <Image source={require("../assets/images/success.png")} style={styles.image} />
+        <Image
+          source={require("../assets/images/success.png")}
+          style={styles.image}
+        />
       </View>
-      <Text>Number of rounds: 0</Text>
+      <Text style={styles.summaryText}>
+        Your phone needed <Text style={styles.higlight}>{roundsNumber}</Text> rounds to guess
+        the number <Text style={styles.higlight}>{userNumber}</Text>
+      </Text>
+      <PrimaryButton onPress={onStartNewGame}>Start New Game</PrimaryButton>
     </View>
   );
 };
@@ -37,5 +45,15 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-  },  
+  },
+  summaryText: {
+    fontFamily: "open-sans",
+    fontSize: 24,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  higlight: {
+    fontFamily: "open-sans-bold",
+    color: Colors.primary500,
+  },
 });
