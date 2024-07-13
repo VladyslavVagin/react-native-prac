@@ -1,17 +1,26 @@
 // @ts-nocheck
-import React, { useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import ExpensesOutput from "../components/ExpensesOutput/ExpensesOutput";
 import { ExpensesContext } from "../context/expenses-context";
 import { getDateMinusDays } from "../util/date";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { fetchExpenses } from "../util/http";
 
 const RecentExpenses = () => {
-  const { expenses } = useContext(ExpensesContext);
-  const recentExpenses = expenses.filter((expense) => {
+  const expensesCtx = useContext(ExpensesContext);
+  const recentExpenses = expensesCtx.expenses.filter((expense) => {
     const today = new Date();
     const day7DaysAgo = getDateMinusDays(today, 7);
     return expense?.date >= day7DaysAgo && expense?.date <= today;
   });
+
+  useEffect(() => {
+    async function getExpenses() {
+      const expenses = await fetchExpenses();
+      expensesCtx.setExpenses(expenses);
+    }
+
+    getExpenses();
+  }, []);
 
   return (
     <ExpensesOutput

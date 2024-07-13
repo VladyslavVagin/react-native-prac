@@ -3,15 +3,17 @@ import { useLayoutEffect, useContext } from "react";
 import { View, StyleSheet } from "react-native";
 import IconButton from "../components/UI/IconButton";
 import { ExpensesContext } from "../context/expenses-context";
+import { storeExpense, updateExpense, deleteExpense } from "../util/http";
 import { GlobalStyles } from "../constants/styles";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 
 const ManageExpense = ({ route, navigation }) => {
-  const { addExpense, deleteExpense, updateExpense, expenses } =
-    useContext(ExpensesContext);
+  const expensesCtx = useContext(ExpensesContext);
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
-  const selectedExpense = expenses.find(expense => expense.id === editedExpenseId);
+  const selectedExpense = expensesCtx.expenses.find(
+    (expense) => expense.id === editedExpenseId
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -21,6 +23,7 @@ const ManageExpense = ({ route, navigation }) => {
 
   function deleteExpenseHandler() {
     deleteExpense(editedExpenseId);
+    expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
 
@@ -28,11 +31,13 @@ const ManageExpense = ({ route, navigation }) => {
     navigation.goBack();
   }
 
-  function confirmHandler( expenseData ) {
+  async function confirmHandler(expenseData) {
     if (isEditing) {
-      updateExpense(editedExpenseId, expenseData);
+      expensesCtx.updateExpense(editedExpenseId, expenseData);
+      await updateExpense(editedExpenseId, expenseData);
     } else {
-      addExpense(expenseData);
+      const id = await storeExpense(expenseData);
+      expensesCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
   }
