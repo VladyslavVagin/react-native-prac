@@ -45,7 +45,6 @@ const ImagePicker = () => {
           quality: 0.5,
         });
 
-        console.log(image);
         setPickedImage(image.assets[0].uri);
     } catch (error) {
         console.log(error);
