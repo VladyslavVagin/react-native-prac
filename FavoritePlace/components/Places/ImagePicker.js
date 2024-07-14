@@ -14,8 +14,6 @@ const ImagePicker = () => {
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
 
-    console.log(pickedImage)
-
   async function verifyPermissions() {
     if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
       const permissionResponse = await requestPermission();
@@ -78,6 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
