@@ -9,7 +9,7 @@ import {
 import OutlinedButton from "../UI/OutlinedButton";
 import { Colors } from "../../constants/colors";
 
-const ImagePicker = () => {
+const ImagePicker = ({ onTakeImage }) => {
   const [pickedImage, setPickedImage] = useState(null);
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -33,19 +33,20 @@ const ImagePicker = () => {
 
   async function takeImageHandler() {
     try {
-        const hasPermission = await verifyPermissions();
-        if (!hasPermission) {
-          return;
-        }
-        const image = await launchCameraAsync({
-          allowsEditing: true,
-          aspect: [16, 9],
-          quality: 0.5,
-        });
+      const hasPermission = await verifyPermissions();
+      if (!hasPermission) {
+        return;
+      }
+      const image = await launchCameraAsync({
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.5,
+      });
 
-        setPickedImage(image.assets[0].uri);
+      setPickedImage(image.assets[0].uri);
+      onTakeImage(image.assets[0].uri);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
   }
 

@@ -1,8 +1,12 @@
-import React from "react";
+// @ts-nocheck
+import React, { useState, useLayoutEffect, useCallback } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Alert } from "react-native";
+import IconButton from "../components/UI/IconButton";
 
-const Map = () => {
+const Map = ({ navigation }) => {
+  const [selectedLocation, setSelectedLocation] = useState();
+
   const region = {
     latitude: 37.78,
     longitude: -122.43,
@@ -10,13 +14,60 @@ const Map = () => {
     longitudeDelta: 0.0421,
   };
 
-  return <MapView style={styles.map} initialRegion={region}></MapView>;
+  function selectLocationHandler(event) {
+    const lat = event.nativeEvent.coordinate.latitude;
+    const lng = event.nativeEvent.coordinate.longitude;
+    setSelectedLocation({ lat, lng });
+  }
+
+  const savePickedLocationHandler = useCallback(() => {
+    if (!selectedLocation) {
+      Alert.alert("No location selected", "Please select a location");
+      return;
+    }
+
+    navigation.navigate("AddPlace", {
+      pickedLat: selectedLocation.lat,
+      pickedLng: selectedLocation.lng,
+    });
+  }, [navigation, selectedLocation]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: ({ tintColor }) => (
+        <IconButton
+          icon="save"
+          size={24}
+          color={tintColor}
+          onPress={savePickedLocationHandler}
+        />
+      ),
+    });
+  }, [navigation, savePickedLocationHandler]);
+
+  return (
+    <MapView
+      style={styles.map}
+      initialRegion={region}
+      onPress={selectLocationHandler}
+    >
+      {selectedLocation && (
+        <Marker
+          title="Picked Location"
+          coordinate={{
+            latitude: selectedLocation.lat,
+            longitude: selectedLocation.lng,
+          }}
+        />
+      )}
+    </MapView>
+  );
 };
 
 export default Map;
 
 const styles = StyleSheet.create({
-    map: {
-        flex: 1,
-    },
+  map: {
+    flex: 1,
+  },
 });
